@@ -8,12 +8,12 @@
 -->
 <script setup>
   import { ref, onMounted } from 'vue';
-  import Form from './views/Form.vue';
+  // import Form from './views/Form.vue'; // 注释掉 Markdown 预览组件
   import StringSplitter from './views/StringSplitter.vue';
   import { useI18n } from 'vue-i18n';
   
   const { locale } = useI18n();
-  const currentView = ref('form'); // 'form' 或 'splitter'
+  const currentView = ref('splitter'); // 默认显示字符串拆分工具
   
   function switchView(view) {
     currentView.value = view;
@@ -28,12 +28,14 @@
 <template>
   <main>
     <div class="nav-tabs">
+      <!-- 注释掉 Markdown 预览按钮
       <button 
         :class="['tab-button', { active: currentView === 'form' }]" 
         @click="switchView('form')"
       >
         Markdown 预览
       </button>
+      -->
       <button 
         :class="['tab-button', { active: currentView === 'splitter' }]" 
         @click="switchView('splitter')"
@@ -43,8 +45,8 @@
     </div>
     
     <div class="view-container">
-      <Form v-if="currentView === 'form'" />
-      <StringSplitter v-else-if="currentView === 'splitter'" />
+      <!-- <Form v-if="currentView === 'form'" /> -->
+      <StringSplitter v-if="currentView === 'splitter'" />
     </div>
   </main>
 </template>
