@@ -7,7 +7,7 @@
  * @desc       : 
 -->
 <script setup>
-  import Form from './views/Form.vue';
+  import Form from './views/StringSplitter.vue';
 </script>
 
 <template>
