@@ -41,5 +41,30 @@
       "success": "导出成功",
       "error": "导出失败"
     }
+  },
+  "splitter": {
+    "title": "字符串拆分工具",
+    "source": "源数据",
+    "sourceTable": "源表格",
+    "sourceView": "源视图",
+    "sourceField": "源字段",
+    "target": "目标数据",
+    "targetTable": "目标表格",
+    "targetView": "目标视图",
+    "targetField": "目标字段",
+    "settings": "拆分设置",
+    "customSeparator": "自定义分隔符",
+    "separator": "分隔符",
+    "separatorPlaceholder": "请输入分隔符",
+    "selectTable": "请选择表格",
+    "selectView": "请选择视图",
+    "selectField": "请选择字段",
+    "execute": "执行拆分",
+    "processing": "处理中...",
+    "result": "处理结果",
+    "totalRecords": "总记录数",
+    "processedRecords": "处理记录数",
+    "insertedLines": "插入行数",
+    "close": "关闭"
   }
 }
