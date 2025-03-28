@@ -161,6 +161,11 @@ async function loadTargetFields() {
 
 // 执行拆分并插入操作
 async function splitAndInsert() {
+
+  // 定义要排除的字段类型
+const EXCLUDED_FIELD_TYPES = [17, 18]; // 17:附件, 18:其他类型
+
+// 在循环中添加判断
   // 验证输入
   if (!sourceTableId.value || !sourceViewId.value || !sourceFieldId.value) {
     ElMessage.warning('请选择源表、视图和字段');
@@ -189,29 +194,54 @@ async function splitAndInsert() {
     const sourceView = await sourceTable.getViewById(sourceViewId.value);
     const recordIds = await sourceView.getVisibleRecordIdList();
     
+    // 获取源表所有字段元数据（用于识别附件类型字段）
+    const sourceFieldMetaList = await sourceView.getFieldMetaList();
+    
     processResult.value.total = recordIds.length;
     
     // 处理每条记录
     for (const recordId of recordIds) {
-      // 获取单元格值
-      const cellValue = await sourceTable.getCellValue(sourceFieldId.value, recordId);
+      // 获取整个记录的所有字段值
+      const record = await sourceTable.getRecordById(recordId);
       
-      if (cellValue && cellValue.length > 0) {
-        // 获取文本内容
-        const text = cellValue.map(item => item.text).join('\n');
+      if (record) {
+        // 获取要拆分的单元格值
+        const cellValue = record.fields[sourceFieldId.value];
         
-        // 根据分隔符拆分文本
-        const splitSeparator = customSeparator.value ? separator.value : '\n';
-        const lines = text.split(splitSeparator).filter(line => line.trim() !== '');
-        
-        // 将每一行插入到目标表
-        for (const line of lines) {
-          await targetTable.addRecord({
-            fields: {
-              [targetFieldId.value]: [{ type: 'text', text: line.trim() }]
-            }
-          });
-          processResult.value.inserted++;
+        if (cellValue && cellValue.length > 0) {
+          // 获取文本内容
+          const text = cellValue.map(item => item.text).join('\n');
+          
+          // 根据分隔符拆分文本
+          const splitSeparator = customSeparator.value ? separator.value : '\n';
+          const lines = text.split(splitSeparator).filter(line => line.trim() !== '');
+          
+          // 准备其他字段的值（排除要拆分的字段和附件类型字段）
+          const otherFields = {};
+          for (const fieldId in record.fields) {
+            // 跳过要拆分的字段
+            if (fieldId === sourceFieldId.value) continue;
+            
+            // 获取字段元数据
+            const fieldMeta = sourceFieldMetaList.find(f => f.id === fieldId);
+            
+            // 跳过附件类型字段（type 17 通常是附件类型）
+            if (fieldMeta && EXCLUDED_FIELD_TYPES.includes(fieldMeta.type)) continue;
+            
+            // 添加其他字段值
+            otherFields[fieldId] = record.fields[fieldId];
+          }
+          
+          // 将每一行插入到目标表
+          for (const line of lines) {
+            await targetTable.addRecord({
+              fields: {
+                ...otherFields, // 添加其他字段值（已排除附件类型）
+                [targetFieldId.value]: [{ type: 'text', text: line.trim() }] // 添加拆分后的值
+              }
+            });
+            processResult.value.inserted++;
+          }
         }
       }
       
@@ -229,6 +259,7 @@ async function splitAndInsert() {
     isProcessing.value = false;
   }
 }
+
 </script>
 
 <template>
