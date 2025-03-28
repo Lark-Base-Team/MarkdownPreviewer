@@ -1,90 +1,86 @@
-<!--
- * @Version    : v1../views/Form.vue
- * @Author     : Wang Chao
- * @Date       : 2025-02-21 13:44
- * @LastAuthor : Wang Chao
- * @LastTime   : 2025-02-24 16:33
- * @desc       : 
--->
-<script setup>
-  import { ref, onMounted } from 'vue';
-  import Form from './views/Form.vue'; 
-  import StringSplitter from './views/StringSplitter.vue';
-  import { useI18n } from 'vue-i18n';
-  
-  const { locale } = useI18n();
-  const currentView = ref('splitter'); // 默认显示字符串拆分工具
-  
-  function switchView(view) {
-    currentView.value = view;
-  }
-  
-  onMounted(() => {
-    // 设置默认语言为中文
-    locale.value = 'zh-CN';
-  });
-</script>
-
 <template>
-  <main>
-    <div class="nav-tabs">
-      <!-- 注释掉 Markdown 预览按钮-->
+  <div class="app-container">
+    <div class="tab-bar">
+      <!-- 原有标签页 -->
       <button 
-        :class="['tab-button', { active: currentView === 'form' }]" 
-        @click="switchView('form')"
+        :class="['tab-button', { active: currentView === 'editor' }]" 
+        @click="switchView('editor')"
       >
-        Markdown 预览
+        文本预览
       </button>
-      
       <button 
         :class="['tab-button', { active: currentView === 'splitter' }]" 
         @click="switchView('splitter')"
       >
-        字符串拆分
+        跨表拆分
+      </button>
+      
+      <!-- 新增的字符串拆分至子记录标签页 -->
+      <button 
+        :class="['tab-button', { active: currentView === 'splitterSub' }]" 
+        @click="switchView('splitterSub')"
+      >
+        单表拆分
       </button>
     </div>
-    
+
     <div class="view-container">
-      <Form v-if="currentView === 'form'" />
-      <StringSplitter v-if="currentView === 'splitter'" />
+      <MarkdownEditor v-if="currentView === 'editor'" />
+      <StringSplitter v-else-if="currentView === 'splitter'" />
+      <StringSplitterSub v-else-if="currentView === 'splitterSub'" />
     </div>
-  </main>
+  </div>
 </template>
 
+<script setup>
+import { ref } from 'vue';
+import MarkdownEditor from './views/Form.vue';
+import StringSplitter from './views/StringSplitter.vue';
+import StringSplitterSub from './views/StringSplitterSub.vue';
+
+const currentView = ref('editor');
+
+function switchView(view) {
+  currentView.value = view;
+}
+</script>
+
 <style scoped>
-  main {
-    padding: 0.5rem;
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
-  }
-  
-  .nav-tabs {
-    display: flex;
-    border-bottom: 1px solid #e5e6eb;
-    margin-bottom: 16px;
-  }
-  
-  .tab-button {
-    padding: 8px 16px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    color: #4e5969;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-  }
-  
-  .tab-button:hover {
-    color: #2955e7;
-  }
-  
-  .tab-button.active {
-    color: #2955e7;
-    border-bottom-color: #2955e7;
-  }
-  
-  .view-container {
-    min-height: 90vh;
-  }
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.tab-bar {
+  display: flex;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.tab-button:hover {
+  background-color: #e9e9e9;
+}
+
+.tab-button.active {
+  background-color: #409eff;
+  color: white;
+}
+
+.view-container {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+}
 </style>
