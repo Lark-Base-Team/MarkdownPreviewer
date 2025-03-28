@@ -8,7 +8,7 @@
 -->
 <script setup>
   import { ref, onMounted } from 'vue';
-  // import Form from './views/Form.vue'; // 注释掉 Markdown 预览组件
+  import Form from './views/Form.vue'; 
   import StringSplitter from './views/StringSplitter.vue';
   import { useI18n } from 'vue-i18n';
   
@@ -28,14 +28,14 @@
 <template>
   <main>
     <div class="nav-tabs">
-      <!-- 注释掉 Markdown 预览按钮
+      <!-- 注释掉 Markdown 预览按钮-->
       <button 
         :class="['tab-button', { active: currentView === 'form' }]" 
         @click="switchView('form')"
       >
         Markdown 预览
       </button>
-      -->
+      
       <button 
         :class="['tab-button', { active: currentView === 'splitter' }]" 
         @click="switchView('splitter')"
@@ -45,7 +45,7 @@
     </div>
     
     <div class="view-container">
-      <!-- <Form v-if="currentView === 'form'" /> -->
+      <Form v-if="currentView === 'form'" />
       <StringSplitter v-if="currentView === 'splitter'" />
     </div>
   </main>

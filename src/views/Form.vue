@@ -720,7 +720,7 @@ ul {
   </el-dialog>
 
   <div class="markdown-preview">
-    <div class="mode-switch">
+    <!-- <div class="mode-switch">
       <el-radio-group
         v-model="previewMode"
         size="small"
@@ -773,7 +773,7 @@ ul {
           {{ $t('preview.sponsor.follow') }}
         </el-button>
       </div>
-    </div>
+    </div> -->
 
     <div
       v-if="previewMode === 'ai'"
