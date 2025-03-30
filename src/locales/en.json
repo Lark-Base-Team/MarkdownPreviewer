@@ -2,6 +2,7 @@
   "title": "Title",
   "preview": {
     "no_data": "No data",
+    "edittext":"Edit",
     "question": "Question",
     "answer": "Answer",
     "empty_state": "Please select  cell to preview Markdown content",
@@ -33,7 +34,9 @@
       "success": "Copied successfully",
       "error": "Copy failed"
     },
-    "edit": "Edit",
+    "edit": {
+      "placeholder": "Enter Markdown content"
+    },
     "save": {
       "success": "Saved successfully",
       "error": "Save failed",

@@ -6,7 +6,7 @@
         :class="['tab-button', { active: currentView === 'editor' }]" 
         @click="switchView('editor')"
       >
-        文本预览
+        文本处理
       </button>
       <button 
         :class="['tab-button', { active: currentView === 'splitter' }]" 

@@ -2,9 +2,10 @@
   "title": "标题",
   "preview": {
     "no_data": "暂无数据",
+    "edittext":"编辑内容",
     "question": "问题",
     "answer": "回答",
-    "empty_state": "请选择单元格预览 Markdown 内容",
+    "empty_state": "请选择单元格预览文本内容",
     "current_field": "当前字段",
     "current_row": "当前行号",
     "navigation": {
@@ -33,7 +34,9 @@
       "success": "复制成功",
       "error": "复制失败"
     },
-    "edit": "编辑",
+    "edit": {
+      "placeholder": "请输入文本内容"
+    },
     "save": {
       "success": "保存成功",
       "error": "保存失败",

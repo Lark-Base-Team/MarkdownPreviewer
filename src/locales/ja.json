@@ -33,7 +33,9 @@
       "success": "コピーしました",
       "error": "コピーに失敗しました"
     },
-    "edit": "編集",
+    "edit": {
+      "placeholder": "Markdownコンテンツを入力してください"
+    },
     "save": {
       "success": "保存しました",
       "error": "保存に失敗しました",

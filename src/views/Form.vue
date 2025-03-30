@@ -1083,7 +1083,7 @@ ul {
         <!-- 编辑区域 -->
         <div class="edit-area">
           <div class="edit-header">
-            <span>{{ $t('preview.edit') }}</span>
+            <span>{{ $t('preview.edittext') }}</span>
             <div>
               <el-button
                 plain
