@@ -233,7 +233,6 @@ async function splitAndInsert() {
 
 <template>
   <div class="string-splitter">
-    <h2 class="title">{{ $t('splitter.title') || '字符串拆分工具' }}</h2>
     
     <div class="section">
       <h3 class="section-title">{{ $t('splitter.source') || '源数据' }}</h3>
