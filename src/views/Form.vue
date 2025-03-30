@@ -28,6 +28,21 @@
   const showBackToTop = ref(false);
   const showBackToTopAnswer = ref(false);
   
+  // 拆分功能相关变量
+  const splitDialogVisible = ref(false);
+  const targetTableList = ref([]);
+  const targetTableId = ref('');
+  const targetViewList = ref([]);
+  const targetViewId = ref('');
+  const targetFieldList = ref([]);
+  const targetFieldId = ref('');
+  const isProcessing = ref(false);
+  const processResult = ref({
+    total: 0,
+    inserted: 0
+  });
+  const resultDialogVisible = ref(false);
+  
   // 编辑内容
   const editContent = ref('');
   
@@ -498,6 +513,7 @@ ul {
 
   onMounted(async () => {
     databaseList.value = await base.getTableMetaList();
+    targetTableList.value = await base.getTableMetaList();
     await updateRecordIds();
 
     // 获取当前视图的字段列表
@@ -512,6 +528,140 @@ ul {
       fieldList.value = _list.filter((item) => item.type === 1 || item.type === 20);
     }
   });
+  
+  // 加载目标表视图
+  async function loadTargetViews() {
+    if (!targetTableId.value) return;
+    
+    try {
+      const table = await base.getTable(targetTableId.value);
+      targetViewList.value = await table.getViewMetaList();
+      targetViewId.value = targetViewList.value[0]?.id || '';
+      
+      // 重置字段选择
+      targetFieldList.value = [];
+      targetFieldId.value = '';
+      
+      // 加载字段
+      if (targetViewId.value) {
+        await loadTargetFields();
+      }
+    } catch (error) {
+      console.error('加载视图失败:', error);
+      ElMessage.error({
+        message: t('preview.load_view_error') || '加载视图失败',
+        offset: 120,
+        duration: 1500,
+      });
+    }
+  }
+
+  // 加载目标表字段
+  async function loadTargetFields() {
+    if (!targetTableId.value || !targetViewId.value) return;
+    
+    try {
+      const table = await base.getTable(targetTableId.value);
+      const view = await table.getViewById(targetViewId.value);
+      const fields = await view.getFieldMetaList();
+      
+      // 只保留文本类型字段
+      targetFieldList.value = fields.filter(field => field.type === 1);
+      targetFieldId.value = '';
+    } catch (error) {
+      console.error('加载字段失败:', error);
+      ElMessage.error({
+        message: t('preview.load_field_error') || '加载字段失败',
+        offset: 120,
+        duration: 1500,
+      });
+    }
+  }
+  
+  // 打开拆分对话框
+  function openSplitDialog() {
+    if (!currentValue.value) {
+      ElMessage.warning({
+        message: t('preview.no_content') || '当前没有内容可拆分',
+        offset: 120,
+        duration: 1500,
+      });
+      return;
+    }
+    
+    splitDialogVisible.value = true;
+    // 默认选择当前表格
+    targetTableId.value = databaseId.value;
+    loadTargetViews();
+  }
+  
+  // 执行拆分并插入操作
+  async function splitAndInsert() {
+    // 验证输入
+    if (!targetTableId.value || !targetViewId.value || !targetFieldId.value) {
+      ElMessage.warning({
+        message: t('preview.select_target') || '请选择目标表格和字段',
+        offset: 120,
+        duration: 1500,
+      });
+      return;
+    }
+    
+    if (!currentValue.value) {
+      ElMessage.warning({
+        message: t('preview.no_content') || '当前没有内容可拆分',
+        offset: 120,
+        duration: 1500,
+      });
+      return;
+    }
+    
+    // 显示加载状态
+    isProcessing.value = true;
+    processResult.value = {
+      total: 0,
+      inserted: 0,
+    };
+    
+    try {
+      // 获取目标表
+      const targetTable = await base.getTable(targetTableId.value);
+      
+      // 根据换行符拆分文本
+      const lines = currentValue.value.split('\n').filter(line => line.trim() !== '');
+      processResult.value.total = lines.length;
+      
+      // 将每一行插入到目标表
+      for (const line of lines) {
+        await targetTable.addRecord({
+          fields: {
+            [targetFieldId.value]: [{ type: 'text', text: line.trim() }]
+          }
+        });
+        processResult.value.inserted++;
+      }
+      
+      // 显示结果对话框
+      resultDialogVisible.value = true;
+      splitDialogVisible.value = false;
+      
+      ElMessage.success({
+        message: t('preview.split_success', { count: processResult.value.inserted }) || 
+                `拆分完成！共插入 ${processResult.value.inserted} 行数据`,
+        offset: 120,
+        duration: 1500,
+      });
+    } catch (error) {
+      console.error('拆分失败:', error);
+      ElMessage.error({
+        message: t('preview.split_error') || '拆分失败',
+        offset: 120,
+        duration: 1500,
+      });
+    } finally {
+      isProcessing.value = false;
+    }
+  }
 
   async function updateRecordIds() {
     const table = await base.getActiveTable();
@@ -767,6 +917,7 @@ ul {
 </script>
 
 <template>
+  <!-- 赞助对话框 -->
   <el-dialog
     v-model="sponsorDialogVisible"
     title="💗赞助我"
@@ -947,6 +1098,20 @@ ul {
                 ><DocumentCopy
                 /></el-icon>
               </el-button>
+              <el-button
+                type="primary"
+                size="small"
+                style="padding: 6px 12px; margin-left: 8px; --el-button-bg-color: #2955e7; --el-button-border-color: #2955e7"
+                @click="openSplitDialog"
+                :title="$t('preview.split.button') || '拆分内容'"
+              >
+                <el-icon size="20">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5 3C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3H5M5 5H19V19H5V5M7 7V9H17V7H7M7 11V13H17V11H7M7 15V17H14V15H7Z" />
+                  </svg>
+                </el-icon>
+                <span style="margin-left: 4px">{{ $t('preview.split.button') || '拆分' }}</span>
+              </el-button>
             </div>
           </div>
           <el-input
@@ -1042,6 +1207,115 @@ ul {
       </div>
     </div>
   </div>
+  
+  <!-- 拆分对话框 -->
+  <el-dialog
+    v-model="splitDialogVisible"
+    :title="$t('preview.split.title') || '拆分内容'"
+    width="400px"
+  >
+    <div class="split-dialog-content">
+      <p>{{ $t('preview.split.desc') || '将当前内容按换行符拆分，并写入到目标表格的指定字段中' }}</p>
+      
+      <div class="form-item">
+        <label>{{ $t('preview.split.targetTable') || '目标表格' }}：</label>
+        <el-select 
+          v-model="targetTableId" 
+          @change="loadTargetViews"
+          :placeholder="$t('preview.split.selectTable') || '请选择表格'"
+          class="select-input"
+        >
+          <el-option
+            v-for="table in targetTableList"
+            :key="table.id"
+            :label="table.name"
+            :value="table.id"
+          />
+        </el-select>
+      </div>
+      
+      <div class="form-item">
+        <label>{{ $t('preview.split.targetView') || '目标视图' }}：</label>
+        <el-select 
+          v-model="targetViewId" 
+          @change="loadTargetFields"
+          :placeholder="$t('preview.split.selectView') || '请选择视图'"
+          class="select-input"
+          :disabled="!targetTableId"
+        >
+          <el-option
+            v-for="view in targetViewList"
+            :key="view.id"
+            :label="view.name"
+            :value="view.id"
+          />
+        </el-select>
+      </div>
+      
+      <div class="form-item">
+        <label>{{ $t('preview.split.targetField') || '目标字段' }}：</label>
+        <el-select 
+          v-model="targetFieldId" 
+          :placeholder="$t('preview.split.selectField') || '请选择字段'"
+          class="select-input"
+          :disabled="!targetViewId"
+        >
+          <el-option
+            v-for="field in targetFieldList"
+            :key="field.id"
+            :label="field.name"
+            :value="field.id"
+          >
+            <span style="display: flex; align-items: center; gap: 4px">
+              <span style="font-family: monospace; font-size: 12px; color: #8f959e">
+                {{ field.type === 1 ? 'A=' : 'ƒx' }}
+              </span>
+              {{ field.name }}
+            </span>
+          </el-option>
+        </el-select>
+      </div>
+    </div>
+    
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="splitDialogVisible = false">{{ $t('preview.cancel') || '取消' }}</el-button>
+        <el-button 
+          type="primary" 
+          @click="splitAndInsert" 
+          :loading="isProcessing"
+          :disabled="!targetFieldId"
+        >
+          {{ isProcessing ? ($t('preview.processing') || '处理中...') : ($t('preview.split.execute') || '开始拆分') }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+  
+  <!-- 结果对话框 -->
+  <el-dialog
+    v-model="resultDialogVisible"
+    :title="$t('preview.split.result') || '拆分结果'"
+    width="300px"
+  >
+    <div class="result-content">
+      <p>{{ $t('preview.split.resultDesc') || '拆分完成！' }}</p>
+      <div class="result-item">
+        <span>{{ $t('preview.split.totalLines') || '总行数' }}：</span>
+        <strong>{{ processResult.total }}</strong>
+      </div>
+      <div class="result-item">
+        <span>{{ $t('preview.split.insertedLines') || '已插入行数' }}：</span>
+        <strong>{{ processResult.inserted }}</strong>
+      </div>
+    </div>
+    
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="resultDialogVisible = false">{{ $t('preview.confirm') || '确定' }}</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -1392,6 +1666,49 @@ ul {
     line-height: 1.6;
     white-space: pre-wrap;
   }
+  
+  /* 拆分对话框样式 */
+  .split-dialog-content {
+    padding: 10px 0;
+  }
+  
+  .form-item {
+    margin-bottom: 15px;
+  }
+  
+  .form-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .select-input {
+    width: 100%;
+  }
+  
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .result-content {
+    text-align: center;
+    padding: 10px 0;
+  }
+  
+  .result-item {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 20px;
+    background-color: #f5f7fa;
+    border-radius: 4px;
+  }
+  
+  .result-item strong {
+    color: #2955e7;
+    font-weight: 600;
+  }
 </style>
 
 <style>
@@ -1563,5 +1880,48 @@ ul {
     color: #4e5969;
     line-height: 1.6;
     white-space: pre-wrap;
+  }
+  
+  /* 拆分对话框样式 */
+  .split-dialog-content {
+    padding: 10px 0;
+  }
+  
+  .form-item {
+    margin-bottom: 15px;
+  }
+  
+  .form-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .select-input {
+    width: 100%;
+  }
+  
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .result-content {
+    text-align: center;
+    padding: 10px 0;
+  }
+  
+  .result-item {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 20px;
+    background-color: #f5f7fa;
+    border-radius: 4px;
+  }
+  
+  .result-item strong {
+    color: #2955e7;
+    font-weight: 600;
   }
 </style>

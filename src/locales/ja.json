@@ -33,13 +33,43 @@
       "success": "コピーしました",
       "error": "コピーに失敗しました"
     },
-
+    "edit": "編集",
+    "save": {
+      "success": "保存しました",
+      "error": "保存に失敗しました",
+      "no_selection": "先にセルを選択してください"
+    },
     "downloadImage": {
       "button": "画像をエクスポート"
     },
     "download": {
       "success": "エクスポートに成功しました",
       "error": "エクスポートに失敗しました"
+    },
+    "no_content": "分割するコンテンツがありません",
+    "select_target": "ターゲットテーブルとフィールドを選択してください",
+    "load_view_error": "ビューの読み込みに失敗しました",
+    "load_field_error": "フィールドの読み込みに失敗しました",
+    "processing": "処理中...",
+    "split_success": "分割完了！{count}行が挿入されました",
+    "split_error": "分割に失敗しました",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "split": {
+      "button": "分割",
+      "title": "コンテンツを分割",
+      "desc": "現在のコンテンツを改行で分割し、ターゲットテーブルの指定されたフィールドに書き込みます",
+      "targetTable": "ターゲットテーブル",
+      "targetView": "ターゲットビュー",
+      "targetField": "ターゲットフィールド",
+      "selectTable": "テーブルを選択してください",
+      "selectView": "ビューを選択してください",
+      "selectField": "フィールドを選択してください",
+      "execute": "分割開始",
+      "result": "分割結果",
+      "resultDesc": "分割完了！",
+      "totalLines": "合計行数",
+      "insertedLines": "挿入された行数"
     }
   }
 }

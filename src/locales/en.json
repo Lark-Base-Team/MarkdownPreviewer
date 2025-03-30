@@ -33,13 +33,43 @@
       "success": "Copied successfully",
       "error": "Copy failed"
     },
-
+    "edit": "Edit",
+    "save": {
+      "success": "Saved successfully",
+      "error": "Save failed",
+      "no_selection": "Please select a cell first"
+    },
     "downloadImage": {
       "button": "Export Image"
     },
     "download": {
       "success": "Export successful",
       "error": "Export failed"
+    },
+    "no_content": "No content to split",
+    "select_target": "Please select target table and field",
+    "load_view_error": "Failed to load view",
+    "load_field_error": "Failed to load fields",
+    "processing": "Processing...",
+    "split_success": "Split completed! {count} lines inserted",
+    "split_error": "Split failed",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "split": {
+      "button": "Split",
+      "title": "Split Content",
+      "desc": "Split current content by line breaks and write to the specified field in the target table",
+      "targetTable": "Target Table",
+      "targetView": "Target View",
+      "targetField": "Target Field",
+      "selectTable": "Please select table",
+      "selectView": "Please select view",
+      "selectField": "Please select field",
+      "execute": "Start Split",
+      "result": "Split Result",
+      "resultDesc": "Split completed!",
+      "totalLines": "Total Lines",
+      "insertedLines": "Inserted Lines"
     }
   }
 }
