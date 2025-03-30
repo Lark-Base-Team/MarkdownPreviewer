@@ -33,7 +33,12 @@
       "success": "复制成功",
       "error": "复制失败"
     },
-
+    "edit": "编辑",
+    "save": {
+      "success": "保存成功",
+      "error": "保存失败",
+      "no_selection": "请先选择单元格"
+    },
     "downloadImage": {
       "button": "导出图片"
     },

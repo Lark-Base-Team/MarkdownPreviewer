@@ -27,6 +27,58 @@
   // 返回顶部按钮显示控制
   const showBackToTop = ref(false);
   const showBackToTopAnswer = ref(false);
+  
+  // 编辑内容
+  const editContent = ref('');
+  
+  // 更新预览内容
+  function updatePreview() {
+    parsedContent.value = md.render(editContent.value || '');
+    // 自动保存内容
+    autoSaveContent();
+  }
+  
+  // 自动保存内容的防抖函数
+  let saveTimeout = null;
+  function autoSaveContent() {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      saveContent();
+    }, 1000); // 1秒后自动保存
+  }
+  
+  // 保存编辑内容
+  async function saveContent() {
+    try {
+      if (!currentFieldId.value || !recordId.value) {
+        ElMessage.warning({
+          message: t('preview.save.no_selection'),
+          offset: 120,
+          duration: 1500,
+        });
+        return;
+      }
+      
+      const table = await base.getActiveTable();
+      await table.setCellValue(currentFieldId.value, recordId.value, editContent.value);
+      
+      // 更新当前值
+      currentValue.value = editContent.value;
+      
+      ElMessage.success({
+        message: t('preview.save.success'),
+        offset: 120,
+        duration: 1500,
+      });
+    } catch (err) {
+      console.error('保存内容失败:', err);
+      ElMessage.error({
+        message: t('preview.save.error'),
+        offset: 120,
+        duration: 1500,
+      });
+    }
+  }
 
   // 监听滚动事件
   function handleScroll(event) {
@@ -38,6 +90,14 @@
     // 当滚动超过一定距离时显示按钮（这里设置为500px）
     showBackToTop.value = scrollTop > 500;
   }
+  
+  // 在编辑区域添加滚动事件监听
+  onMounted(() => {
+    const editArea = document.querySelector('.edit-area');
+    if (editArea) {
+      editArea.addEventListener('scroll', handleScroll);
+    }
+  });
 
   // 监听回答区域滚动事件
   function handleAnswerScroll(event) {
@@ -50,7 +110,7 @@
 
   // 返回顶部
   function scrollToTop() {
-    const previewContent = document.querySelector('.cell-preview');
+    const previewContent = document.querySelector('.edit-area');
     if (previewContent) {
       previewContent.scrollTop = 0;
     }
@@ -502,9 +562,12 @@ ul {
       const data = await table.getCellValue(fieldIdToUse, recordId.value);
       if (data && data.length) {
         currentValue.value = data.map((item) => item.text.replace(/\n$/, '')).join('\n');
+        // 设置编辑内容
+        editContent.value = currentValue.value;
         parsedContent.value = md.render(currentValue.value || '');
       } else {
         currentValue.value = '';
+        editContent.value = '';
         parsedContent.value = `<div class="empty-content">❗︎${t('preview.no_data')}</div>`;
       }
     }
@@ -649,8 +712,14 @@ ul {
           let data = await table.getCellValue(currentFieldId.value, recordId.value);
           if (data && data.length) {
             currentValue.value = data.map((item) => item.text.replace(/\n$/, '')).join('\n');
+            // 设置编辑内容
+            editContent.value = currentValue.value;
             // 解析 Markdown 内容
             parsedContent.value = md.render(currentValue.value || '');
+          } else {
+            currentValue.value = '';
+            editContent.value = '';
+            parsedContent.value = `<div class="empty-content">❗︎${t('preview.no_data')}</div>`;
           }
 
           // 更新当前行号
@@ -663,6 +732,7 @@ ul {
         console.error('获取字段信息失败:', error);
         currentFieldName.value = '';
         currentValue.value = '';
+        editContent.value = '';
         parsedContent.value = '';
       }
     } else if (!event.data.fieldId && !event.data.recordId) {
@@ -858,52 +928,46 @@ ul {
       </div>
     </div>
     <div v-if="currentRecordIndex >= 0">
-      <div
-        class="cell-preview"
-        @scroll="handleScroll"
-        v-if="previewMode === 'normal'"
-      >
-        <div class="preview-header">
-          <div>
-            <el-button
-              plain
-              size="small"
-              style="padding: 6px 4px"
-              @click="copyContent"
-            >
-              <el-icon
-                class="copy-button"
-                size="20"
-                :title="$t('preview.copy.button')"
+      <div class="edit-preview-container" v-if="previewMode === 'normal'">
+        <!-- 编辑区域 -->
+        <div class="edit-area">
+          <div class="edit-header">
+            <span>{{ $t('preview.edit') }}</span>
+            <div>
+              <el-button
+                plain
+                size="small"
+                style="padding: 6px 4px"
+                @click="copyContent"
+              >
+                <el-icon
+                  class="copy-button"
+                  size="20"
+                  :title="$t('preview.copy.button')"
                 ><DocumentCopy
-              /></el-icon>
-            </el-button>
+                /></el-icon>
+              </el-button>
+            </div>
           </div>
-          <!-- FIXME 暂时不做 导出图片 ,样式有点问题-->
-          <!-- <div>
-            <el-icon
-              @click="downloadAsImage"
-              style="margin-right: 12px"
-              class="copy-button"
-              size="20"
-              :title="$t('preview.downloadImage.button')"
-              ><Download
-            /></el-icon>
-          </div> -->
+          <el-input
+            v-model="editContent"
+            type="textarea"
+            :rows="15"
+            :placeholder="$t('preview.edit.placeholder')"
+            resize="none"
+            @input="updatePreview"
+            class="markdown-editor"
+          />
+          <el-button
+            v-show="showBackToTop"
+            size="small"
+            type="primary"
+            class="back-to-top-button"
+            @click="scrollToTop"
+          >
+            <el-icon size="16"><ArrowUp /></el-icon>
+          </el-button>
         </div>
-        <el-button
-          v-show="showBackToTop"
-          size="small"
-          type="primary"
-          class="back-to-top-button"
-          @click="scrollToTop"
-        >
-          <el-icon size="16"><ArrowUp /></el-icon>
-        </el-button>
-        <div
-          class="preview-content"
-          v-html="parsedContent"
-        ></div>
       </div>
       <div
         v-else
@@ -1036,6 +1100,43 @@ ul {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+  
+  .edit-preview-container {
+    margin-top: 16px;
+  }
+
+  .edit-area {
+    border: 1px solid #e5e6eb;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px);
+  }
+  
+  .edit-header, .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f5f7fa;
+    border-bottom: 1px solid #e5e6eb;
+    font-weight: 600;
+  }
+  
+  .markdown-editor {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .markdown-editor :deep(.el-textarea__inner) {
+    height: 100%;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    line-height: 1.6;
+    padding: 12px;
+    border: none;
+    resize: none;
   }
 
   .mode-switch {
