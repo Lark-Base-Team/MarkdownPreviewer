@@ -8,20 +8,20 @@
       >
         文本处理
       </button>
-      <button 
+      <!-- <button 
         :class="['tab-button', { active: currentView === 'splitter' }]" 
         @click="switchView('splitter')"
       >
         跨表拆分
-      </button>
+      </button> -->
       
       <!-- 新增的字符串拆分至子记录标签页 -->
-      <button 
+      <!-- <button 
         :class="['tab-button', { active: currentView === 'splitterSub' }]" 
         @click="switchView('splitterSub')"
       >
         单表拆分
-      </button>
+      </button> -->
     </div>
 
     <div class="view-container">
