@@ -42,6 +42,9 @@
     inserted: 0
   });
   const resultDialogVisible = ref(false);
+  // 分隔符设置
+  const separator = ref('\n');
+  const customSeparator = ref(false);
   
   // 编辑内容
   const editContent = ref('');
@@ -626,9 +629,10 @@ ul {
     try {
       // 获取目标表
       const targetTable = await base.getTable(targetTableId.value);
-      
+      // 根据分隔符拆分文本
+      const splitSeparator = customSeparator.value ? separator.value : '\n';
+      const lines = currentValue.value.split(splitSeparator).filter(line => line.trim() !== '');
       // 根据换行符拆分文本
-      const lines = currentValue.value.split('\n').filter(line => line.trim() !== '');
       processResult.value.total = lines.length;
       
       // 将每一行插入到目标表
@@ -1274,6 +1278,21 @@ ul {
             </span>
           </el-option>
         </el-select>
+      </div>
+      <div class="form-item">
+        <label>
+          <input type="checkbox" v-model="customSeparator" />
+          {{ $t('splitter.customSeparator') || '自定义分隔符' }}
+        </label>
+      </div>
+      
+      <div class="form-item" v-if="customSeparator">
+        <label>{{ $t('splitter.separator') || '分隔符' }}：</label>
+        <el-input 
+          v-model="separator" 
+          :placeholder="$t('splitter.separatorPlaceholder') || '请输入分隔符'"
+          class="select-input"
+        />
       </div>
     </div>
     
