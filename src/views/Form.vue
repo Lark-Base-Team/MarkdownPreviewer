@@ -921,7 +921,7 @@ ul {
 </script>
 
 <template>
-  <!-- 赞助对话框 -->
+  <!-- 赞助对话框
   <el-dialog
     v-model="sponsorDialogVisible"
     title="💗赞助我"
@@ -942,7 +942,7 @@ ul {
         />
       </div>
     </div>
-  </el-dialog>
+  </el-dialog> -->
 
   <div class="markdown-preview">
     <!-- <div class="mode-switch">

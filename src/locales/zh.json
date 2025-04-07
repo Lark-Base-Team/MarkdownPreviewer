@@ -1,16 +1,23 @@
 {
   "title": "标题",
   "preview": {
+    "help": {
+      "button": "Markdown 语法帮助",
+      "title": "Markdown 语法指南"
+    },
     "no_data": "暂无数据",
-    "edittext":"编辑内容",
     "question": "问题",
     "answer": "回答",
-    "empty_state": "请选择单元格预览文本内容",
-    "current_field": "当前字段",
-    "current_row": "当前行号",
+    "empty_state": "请选择单元格预览 Markdown 内容",
+    "current_field": "字段",
+    "current_row": "行号",
+    "row_prefix": "第",
+    "row_suffix": "行",
     "navigation": {
-      "prev": "上一个",
-      "next": "下一个"
+      "prev": "上一行",
+      "next": "下一行",
+      "prev_field": "上一字段",
+      "next_field": "下一字段"
     },
     "mode": {
       "normal": "普通预览",
@@ -23,10 +30,7 @@
       "answer_field_placeholder": "请选择回答字段"
     },
     "sponsor": {
-      "me": "赞助我",
-      "tip1": "如果这个插件对你有帮助,欢迎赞助我一杯咖啡",
-      "tip2": "感谢支持,二维码仅用于自愿赞助,不涉及任何商品或服务交易",
-      "tip3": "请扫描下方二维码进行赞助",
+      "join_group": "加入群聊",
       "follow": "关注我"
     },
     "copy": {
@@ -73,6 +77,10 @@
       "resultDesc": "拆分完成！",
       "totalLines": "总行数",
       "insertedLines": "已插入行数"
+    },
+    "setting": {
+      "title": "设置",
+      "show_word_count": "显示字数和阅读时间"
     }
   },
   "splitter": {

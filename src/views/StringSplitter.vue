@@ -1431,39 +1431,6 @@
 </script>
 
 <template>
-  <!-- 赞助弹窗 -->
-  <el-dialog
-    v-model="sponsorDialogVisible"
-    width="90vw"
-  >
-    <template #title>
-      <div style="display: flex; align-items: center; gap: 8px">
-        <el-icon
-          size="20"
-          style="color: #646a73"
-          ><CreditCard
-        /></el-icon>
-        <span>💗 {{ $t('preview.sponsor.me') }}</span>
-      </div>
-    </template>
-    <div class="sponsor-content">
-      <p>{{ $t('preview.sponsor.tip1') }}</p>
-      <p>{{ $t('preview.sponsor.tip2') }}</p>
-      <p>{{ $t('preview.sponsor.tip3') }}</p>
-      <div style="display: flex; justify-content: center; gap: 6px; margin-top: 20px">
-        <img
-          src="@/assets/wx.png"
-          alt="微信赞赏码"
-          style="width: 170px; height: 190px"
-        />
-        <img
-          src="@/assets/zfb.png"
-          alt="支付宝收款码"
-          style="width: 160px; height: 190px"
-        />
-      </div>
-    </div>
-  </el-dialog>
 
   <!-- 设置弹窗 -->
   <el-dialog
@@ -1563,7 +1530,7 @@
         <!-- 预览区域配置 -->
         <div
           class="preview-config"
-          style="margin-top: 20px"
+          style="margin-top: 0px"
         >
           <h3 style="margin-bottom: 20px; font-size: 18px; font-weight: 600; color: #1f2329">预览区域配置</h3>
           <div
@@ -1677,90 +1644,7 @@
         </el-select>
       </div>
     </div>
-    <div
-      class="header-container"
-      v-if="currentRecordIndex >= 0"
-    >
-      <div class="header-content">
-        <div style="background-color: #f5f7fa">
-          <div
-            class="cell-info"
-            style="display: flex; justify-content: flex-start"
-          >
-            <div class="field-navigation-buttons">
-              <el-button
-                @click="switchField('prev')"
-                size="small"
-                style="padding: 2px; height: 16px"
-                :title="$t('preview.navigation.prev_field')"
-                :disabled="
-                  !fieldList || !currentFieldId || fieldList.findIndex((field) => field.id === currentFieldId) <= 0
-                "
-              >
-                <el-icon style="font-size: 12px"><ArrowLeft /></el-icon>
-              </el-button>
-              <el-button
-                type="primary"
-                @click="switchField('next')"
-                size="small"
-                style="
-                  padding: 2px;
-                  height: 16px;
-                  --el-button-bg-color: #2955e7;
-                  --el-button-border-color: #2955e7;
-                  margin-left: 6px;
-                "
-                :title="$t('preview.navigation.next_field')"
-                :disabled="
-                  !fieldList ||
-                  !currentFieldId ||
-                  fieldList.findIndex((field) => field.id === currentFieldId) === fieldList.length - 1
-                "
-              >
-                <el-icon style="font-size: 12px"><ArrowRight /></el-icon>
-              </el-button>
-            </div>
-            <div style="display: flex; width: 100%; margin-left: 5px">
-              <div>
-                <span
-                  style="
-                    display: inline-block;
-                    max-width: 300px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    vertical-align: bottom;
-                  "
-                  :title="currentFieldName"
-                >
-                  <strong style="color: #2955e7">{{ currentFieldName }}</strong></span
-                >
-              </div>
-              <div style="margin-left: 5px">
-                <span
-                  >{{ $t('preview.row_prefix') }} <strong style="color: #2955e7">{{ currentRecordIndex + 1 }}</strong>
-                  {{ $t('preview.row_suffix') }}</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="navigation-buttons">
-          <el-button @click="switchRecord('prev')">
-            <el-icon size="16px; font-weight: bold"><ArrowLeft /></el-icon>
-            <span class="material-icons">{{ $t('preview.navigation.prev') }}</span>
-          </el-button>
-          <el-button
-            type="primary"
-            @click="switchRecord('next')"
-            style="--el-button-bg-color: #2955e7; --el-button-border-color: #2955e7"
-          >
-            <span class="material-icons">{{ $t('preview.navigation.next') }}</span>
-            <el-icon size="16px; font-weight: bold"><ArrowRight /></el-icon>
-          </el-button>
-        </div>
-      </div>
-    </div>
+
     <div v-if="currentRecordIndex >= 0">
       <div
         v-if="previewMode === 'normal'"
@@ -1783,7 +1667,9 @@
           <el-button
             class="setting-button"
             @click="settingDialogVisible = true"
-            style="padding: 0px 4px"
+            plain
+              size="small"
+              style="padding: 6px 4px"
           >
             <el-icon size="18">
               <Setting />
@@ -1998,6 +1884,90 @@
                 class="word-count"
                 v-if="showWordCount"
               >
+              <div
+      class="header-container"
+      v-if="currentRecordIndex >= 0"
+    >
+      <div class="header-content">
+        <div style="background-color: #f5f7fa">
+          <div
+            class="cell-info"
+            style="display: flex; justify-content: flex-start"
+          >
+            <div class="field-navigation-buttons">
+              <el-button
+                @click="switchField('prev')"
+                size="small"
+                style="padding: 2px; height: 16px"
+                :title="$t('preview.navigation.prev_field')"
+                :disabled="
+                  !fieldList || !currentFieldId || fieldList.findIndex((field) => field.id === currentFieldId) <= 0
+                "
+              >
+                <el-icon style="font-size: 12px"><ArrowLeft /></el-icon>
+              </el-button>
+              <el-button
+                type="primary"
+                @click="switchField('next')"
+                size="small"
+                style="
+                  padding: 2px;
+                  height: 16px;
+                  --el-button-bg-color: #2955e7;
+                  --el-button-border-color: #2955e7;
+                  margin-left: 6px;
+                "
+                :title="$t('preview.navigation.next_field')"
+                :disabled="
+                  !fieldList ||
+                  !currentFieldId ||
+                  fieldList.findIndex((field) => field.id === currentFieldId) === fieldList.length - 1
+                "
+              >
+                <el-icon style="font-size: 12px"><ArrowRight /></el-icon>
+              </el-button>
+            </div>
+            <div style="display: flex; width: 100%; margin-left: 5px">
+              <div>
+                <span
+                  style="
+                    display: inline-block;
+                    max-width: 300px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    vertical-align: bottom;
+                  "
+                  :title="currentFieldName"
+                >
+                  <strong style="color: #2955e7">{{ currentFieldName }}</strong></span
+                >
+              </div>
+              <div style="margin-left: 5px">
+                <span
+                  >{{ $t('preview.row_prefix') }} <strong style="color: #2955e7">{{ currentRecordIndex + 1 }}</strong>
+                  {{ $t('preview.row_suffix') }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navigation-buttons">
+          <el-button @click="switchRecord('prev')">
+            <el-icon size="16px; font-weight: bold"><ArrowLeft /></el-icon>
+            <span class="material-icons">{{ $t('preview.navigation.prev') }}</span>
+          </el-button>
+          <el-button
+            type="primary"
+            @click="switchRecord('next')"
+            style="--el-button-bg-color: #2955e7; --el-button-border-color: #2955e7"
+          >
+            <span class="material-icons">{{ $t('preview.navigation.next') }}</span>
+            <el-icon size="16px; font-weight: bold"><ArrowRight /></el-icon>
+          </el-button>
+        </div>
+      </div>
+    </div>
                 字数 {{ wordCount }} , 阅读大约需 {{ readingTime }} 分钟
               </div>
             </div>

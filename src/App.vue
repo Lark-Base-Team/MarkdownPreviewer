@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <div class="tab-bar">
+      <button 
+        :class="['tab-button', { active: currentView === 'splitter' }]" 
+        @click="switchView('splitter')"
+      >
+        跨表拆分
+      </button>
       <!-- 原有标签页 -->
       <button 
         :class="['tab-button', { active: currentView === 'editor' }]" 
         @click="switchView('editor')"
       >
         文本处理
-      </button>
-      <button 
-        :class="['tab-button', { active: currentView === 'splitter' }]" 
-        @click="switchView('splitter')"
-      >
-        跨表拆分
       </button>
       
       <!-- 新增的字符串拆分至子记录标签页 -->
@@ -38,7 +38,7 @@ import MarkdownEditor from './views/Form.vue';
 import StringSplitter from './views/StringSplitter.vue';
 import StringSplitterSub from './views/StringSplitterSub.vue';
 
-const currentView = ref('editor');
+const currentView = ref('splitter');
 
 function switchView(view) {
   currentView.value = view;
