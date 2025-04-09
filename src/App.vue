@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="app-container">
     <div class="tab-bar">
       <button 
@@ -7,21 +7,18 @@
       >
         跨表拆分
       </button>
-      <!-- 原有标签页 -->
       <button 
         :class="['tab-button', { active: currentView === 'editor' }]" 
         @click="switchView('editor')"
       >
         文本处理
       </button>
-      
-      <!-- 新增的字符串拆分至子记录标签页 -->
-      <!-- <button 
+      <button 
         :class="['tab-button', { active: currentView === 'splitterSub' }]" 
         @click="switchView('splitterSub')"
       >
         单表拆分
-      </button> -->
+      </button>
     </div>
 
     <div class="view-container">
@@ -83,4 +80,21 @@ function switchView(view) {
   overflow: auto;
   padding: 20px;
 }
+</style> -->
+<script setup>
+  import StringSplitter from './views/StringSplitter.vue';
+</script>
+
+<template>
+  <main>
+    <StringSplitter />
+  </main>
+</template>
+
+<style scoped>
+  main {
+    padding: 0.5rem;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+  }
 </style>

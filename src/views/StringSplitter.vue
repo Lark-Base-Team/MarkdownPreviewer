@@ -58,10 +58,12 @@
   ];
 
   // 当前选中的主题色
-  const currentThemeColor = ref(localStorage.getItem('markdownPreviewThemeColor') || '#000');
+  // const currentThemeColor = ref(localStorage.getItem('markdownPreviewThemeColor') || '#000');
+  const currentThemeColor = ref('#2955e7');
 
   // 是否显示字数和阅读时间
-  const showWordCount = ref(localStorage.getItem('markdownPreviewShowWordCount') !== 'false');
+  // const showWordCount = ref(localStorage.getItem('markdownPreviewShowWordCount') !== 'false');
+  const showWordCount = ref(true);
 
   // 监听主题色变化并应用样式
   const applyThemeColor = (color) => {
@@ -282,7 +284,7 @@
     { syntax: '~~文本~~', description: '删除线' },
     { syntax: '- [ ] 待办事项', description: '任务列表' },
     { 
-      syntax: '```mermaid\ngraph LR\nA-->B\n```', 
+      syntax: '```mermaid\nflowchart TD\nA-->B\n```', 
       description: 'Mermaid 图表' 
     },
   ]);
@@ -1664,7 +1666,7 @@
           拆分
             </el-button> -->
 
-          <el-button
+          <!-- <el-button
             class="setting-button"
             @click="settingDialogVisible = true"
             plain
@@ -1674,7 +1676,7 @@
             <el-icon size="18">
               <Setting />
             </el-icon>
-          </el-button>
+          </el-button> -->
 
             <el-button
               v-if="isTextField"
@@ -1733,7 +1735,7 @@
                 ><QuestionFilled
               /></el-icon>
             </el-button>
-            <el-button
+            <!-- <el-button
               v-if="!isAiMode"
               @click="toggleFullscreen"
               plain
@@ -1744,7 +1746,6 @@
                 size="20"
                 :title="$t(isFullscreen ? 'preview.fullscreen.exit' : 'preview.fullscreen.enter')"
               >
-                <!-- <FullScreen /> -->
 
                 <full-screen
                   v-if="!isFullscreen"
@@ -1757,7 +1758,7 @@
                   size="24"
                 />
               </el-icon>
-            </el-button>
+            </el-button> -->
             <el-button
                 type="primary"
                 size="small"
